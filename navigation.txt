@@ -1,0 +1,18 @@
+************
+Directories
+************
+code -- all the source code of the game engine, games and course.
+course -- course text and media (not included to remote repo).
+bin -- all the generated binary code ready to execute.
+intermediate -- generated intermediate binary code (object files).
+lib -- generated static libs.
+external -- thirdparty libs.
+doc -- documentation.
+
+=========================
+code/GDHammer directory
+
+=========================
+
+GDHBaseLib -- base (common) code like containers, assertation macros, math
+GDHPlatform -- platform (processor+OS) dependent code.
