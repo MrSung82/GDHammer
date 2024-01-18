@@ -72,66 +72,66 @@ Web-link: https://opensource.org/license/gpl-3-0/
 Description of this file
 ====================================
 
-Integer types definitions.
 */
-#ifndef GDHINT_H_INCLUDED
-#define GDHINT_H_INCLUDED
 
-#include <limits>
+#ifndef GDHERR_H_INCLUDED
+#define GDHERR_H_INCLUDED
 
-#ifdef __GNUC__
-#   if __GNUC__ < 8
-#       error "Too old version of gcc"
-#   endif
+#include "GDHBaseLib/gdhint.h"
 
-// for gcc we use exact sized integers from stdint.h
-#include <cstdint>
+enum class GdhResultType : GdhByte
+{
+    kERROR = 0,
+    kOk = 1,
+    kFATAL = 2,
+    kCANCEL = 3,
+    kWARN = 4
+};
+
+enum class GdhErrorCodes : GdhInt16
+{
+    kUnknown = -1,
+    kNone
+
+};
+
+enum class GdhErrorSource : GdhByte
+{
+    kGdh,
+
+};
 
 namespace gdh
 {
-using Int8 = int8_t;
-using Int16 = int16_t;
-using Int32 = int32_t;
 
-using UInt8 = uint8_t;
-using UInt16 = uint16_t;
-using UInt32 = uint32_t;
-
-} // end of gdh
-
-#else // !gcc (other compilers)
-#   error "unsupported compiler"
-#endif // compiler dependent code end
-
-// signed exact integers
-using GdhInt8 = gdh::Int8;
-using GdhInt16 = gdh::Int16;
-using GdhInt32 = gdh::Int32;
-
-// unsigned exact integers
-using GdhUInt8 = gdh::UInt8;
-using GdhUInt16 = gdh::UInt16;
-using GdhUInt32 = gdh::UInt32;
-
-/// Byte
-using GdhByte = GdhUInt8;
-
-/// base type for size storage
-using GdhSize = GdhUInt32;
-
-/// base type for index storage
-using GdhIndex = GdhUInt32;
-
-/** value for uninitialized index or value for the case when some value needs
-to be returned if we didn't find an index of the thing we were looking for.
+/* Class for values to return from functions.
 */
-const GdhIndex kGDH_NOINDEX = GdhIndex(0xFFFFFFFF);
-
-namespace gdh
+class Result
 {
-using Byte = GdhByte;
-using Size = GdhSize;
-using Index = GdhIndex;
+public:
+    Result() = default;
 
+    Result(Int16 errorCode,
+           Byte result = GdhResultType::kERROR,
+           Byte custom = GdhErrorSource::kGdh)
+    : m_result{result}
+    , m_custom{custom}
+    , m_errorCode{errorCode}
+    {
+
+    }
+
+    Byte getResult() const { return m_result; }
+    Byte getCustom() const { return m_custom; }
+    Int16 getErrorCode() const { return m_errorCode; }
+
+    operator bool() const { return static_cast<Byte>(GdhResultType::kOk) == m_result; }
+private:
+    Byte m_result{GdhResultType::kOk}; // common result of operation (Ok, error, fatal etc)
+    Byte m_custom{GdhErrorSource::kGdh}; // use it for library identification for example
+    Int16 m_errorCode{GdhErrorCodes::kNone};
+};
 } // end of gdh
-#endif // GDHINT_H_INCLUDED
+
+
+#endif // GDHERR_H_INCLUDED
